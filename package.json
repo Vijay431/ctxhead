@@ -1,0 +1,36 @@
+{
+  "name": "ctxhead",
+  "version": "0.1.0",
+  "description": "Add short frontmatter headers to source files so AI agents read ~15 lines instead of whole files.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ctxhead": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@12.20.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && chmod +x dist/cli.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "test": "vitest run",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.9.0",
+    "ignore": "^7.0.14"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.8",
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}
