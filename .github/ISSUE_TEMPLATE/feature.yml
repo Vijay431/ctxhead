@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an improvement or new capability for ctxhead
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. For security vulnerabilities, do not use this form. Use the private advisory link in SECURITY.md instead.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem are you trying to solve? Describe the situation, not the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How you would like ctxhead to behave
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you considered, including workarounds
+    validations:
+      required: false

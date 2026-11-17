@@ -2,7 +2,26 @@
   "name": "ctxhead",
   "version": "0.1.0",
   "description": "Add short frontmatter headers to source files so AI agents read ~15 lines instead of whole files.",
-  "license": "MIT",
+  "keywords": [
+    "ai",
+    "agents",
+    "claude",
+    "codex",
+    "gemini",
+    "context",
+    "cli",
+    "frontmatter"
+  ],
+  "license": "Apache-2.0",
+  "author": "Vijay Gangatharan <vijaygangatharan.official@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vijay431/vscode-ctxhead.git"
+  },
+  "homepage": "https://github.com/Vijay431/vscode-ctxhead#readme",
+  "bugs": {
+    "url": "https://github.com/Vijay431/vscode-ctxhead/issues"
+  },
   "type": "module",
   "bin": {
     "ctxhead": "dist/cli.js"
@@ -10,7 +29,8 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "NOTICE"
   ],
   "engines": {
     "node": ">=22"

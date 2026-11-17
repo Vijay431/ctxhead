@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <title>ctxhead</title>
+  <rect width="1280" height="640" fill="#0d1117"/>
+  <rect x="1" y="1" width="1278" height="638" fill="none" stroke="#30363d" stroke-width="2"/>
+
+  <!-- Left column -->
+  <g transform="translate(80, 80)">
+    <rect width="72" height="72" rx="16" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+    <line x1="0" y1="22" x2="72" y2="22" stroke="#30363d" stroke-width="1.5"/>
+    <circle cx="12" cy="11" r="2.5" fill="#30363d"/>
+    <circle cx="20" cy="11" r="2.5" fill="#30363d"/>
+    <circle cx="28" cy="11" r="2.5" fill="#30363d"/>
+    <rect x="8" y="28" width="56" height="20" rx="3" fill="#0d1117" stroke="#3fb950" stroke-width="1"/>
+    <rect x="12" y="32" width="28" height="2.5" rx="1.25" fill="#3fb950"/>
+    <rect x="12" y="37" width="46" height="2.5" rx="1.25" fill="#58a6ff"/>
+    <rect x="12" y="42" width="34" height="2.5" rx="1.25" fill="#58a6ff" fill-opacity="0.8"/>
+    <rect x="12" y="52" width="48" height="2" rx="1" fill="#30363d"/>
+    <rect x="12" y="57" width="36" height="2" rx="1" fill="#30363d" fill-opacity="0.6"/>
+
+    <text x="0" y="146" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="56" font-weight="700" fill="#e6edf3"><tspan fill="#3fb950">&gt;_ </tspan>ctxhead</text>
+
+    <text font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="22" fill="#8b949e"><tspan x="2" y="194">Headers that let AI agents read 15 lines,</tspan><tspan x="2" y="224">not the whole file.</tspan></text>
+
+    <g font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="17" fill="#e6edf3">
+      <circle cx="6" cy="274" r="5" fill="#3fb950"/>
+      <text x="24" y="280">Short frontmatter header per file</text>
+      <circle cx="6" cy="316" r="5" fill="#58a6ff"/>
+      <text x="24" y="322">Body-hash staleness checks</text>
+      <circle cx="6" cy="358" r="5" fill="#d29922"/>
+      <text x="24" y="364">Claude Code · Codex · Gemini CLI · Antigravity</text>
+    </g>
+
+    <rect y="410" width="300" height="48" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+    <text x="18" y="440" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#e6edf3"><tspan fill="#3fb950">$ </tspan>ctxhead<tspan fill="#58a6ff"> check</tspan></text>
+  </g>
+
+  <!-- Right: code panel -->
+  <g transform="translate(660, 80)">
+    <rect width="540" height="400" rx="12" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <line x1="0" y1="42" x2="540" y2="42" stroke="#30363d" stroke-width="1.5"/>
+    <circle cx="22" cy="21" r="5" fill="#30363d"/>
+    <circle cx="38" cy="21" r="5" fill="#30363d"/>
+    <circle cx="54" cy="21" r="5" fill="#30363d"/>
+    <rect x="76" y="8" width="176" height="28" rx="5" fill="#0d1117"/>
+    <circle cx="92" cy="22" r="3.5" fill="#3fb950"/>
+    <text x="104" y="26" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#e6edf3">auth-middleware.ts</text>
+
+    <rect x="18" y="58" width="504" height="154" rx="8" fill="#0d1117" stroke="#3fb950" stroke-width="1.2" stroke-opacity="0.6"/>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14">
+      <text x="34" y="90" fill="#8b949e">// ---</text>
+      <text x="34" y="116"><tspan fill="#8b949e">// </tspan><tspan fill="#58a6ff">name</tspan><tspan fill="#e6edf3">: </tspan><tspan fill="#3fb950">auth-middleware</tspan></text>
+      <text x="34" y="142"><tspan fill="#8b949e">// </tspan><tspan fill="#58a6ff">description</tspan><tspan fill="#e6edf3">: </tspan><tspan fill="#3fb950">Verifies JWTs on incoming requests.</tspan></text>
+      <text x="34" y="168"><tspan fill="#8b949e">// </tspan><tspan fill="#58a6ff">ctxhead</tspan><tspan fill="#e6edf3">: </tspan><tspan fill="#d29922">v1 sha256:b40dedde…</tspan></text>
+    </g>
+    <text x="34" y="194" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" fill="#8b949e">// ---</text>
+
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" fill="#6e7681">
+      <text x="34" y="244" fill-opacity="1">import { verify } from "./jwt";</text>
+      <text x="34" y="272" fill-opacity="0.8">export function authMiddleware(req) {</text>
+      <text x="34" y="300" fill-opacity="0.6">  const token = readBearer(req);</text>
+      <text x="34" y="328" fill-opacity="0.45">  return verify(token);</text>
+      <text x="34" y="356" fill-opacity="0.3">}</text>
+    </g>
+  </g>
+</svg>

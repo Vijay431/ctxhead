@@ -1,0 +1,15 @@
+$ ctxhead init
+created  .ctxignore
+created  .ctxhead.json
+
+Next steps:
+  1. ctxhead add <path>   choose the files or folders that get headers
+  2. ctxhead enable       allow agents to write headers in this repository
+$ ctxhead add src
+added    src
+$ ctxhead enable
+ctxhead is now enabled in this repository.
+$ ctxhead write src/greet.ts --description "Builds a greeting string for a given name. Open when changing how users are greeted."
+wrote    src/greet.ts
+$ ctxhead check
+OK: 1 file(s) checked, all headers fresh.

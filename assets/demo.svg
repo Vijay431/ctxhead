@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 450" width="1200" height="450" role="img">
+  <title>ctxhead demo</title>
+  <style>
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    .line {
+      opacity: 0;
+      animation-name: fadeIn;
+      animation-duration: 0.25s;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in-out;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      white-space: pre;
+    }
+    .line-cmd { fill: #58a6ff; font-weight: 600; }
+    .line-out { fill: #c9d1d9; }
+    .line-dim { fill: #8b949e; }
+    .line-ok  { fill: #3fb950; font-weight: 600; }
+    .l1  { animation-delay: 0.2s; }
+    .l2  { animation-delay: 0.8s; }
+    .l3  { animation-delay: 1.2s; }
+    .l4  { animation-delay: 1.8s; }
+    .l5  { animation-delay: 2.3s; }
+    .l6  { animation-delay: 2.8s; }
+    .l7  { animation-delay: 3.6s; }
+    .l8  { animation-delay: 4.2s; }
+    .l9  { animation-delay: 5.0s; }
+    .l10 { animation-delay: 5.6s; }
+    .l11 { animation-delay: 6.4s; }
+    .l12 { animation-delay: 7.2s; }
+    .l13 { animation-delay: 8.0s; }
+    .l14 { animation-delay: 8.7s; }
+  </style>
+
+  <!-- Window Chrome -->
+  <rect width="1200" height="450" rx="10" ry="10" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  <path d="M 0,10 A 10,10 0 0,1 10,0 L 1190,0 A 10,10 0 0,1 1200,10 L 1200,40 L 0,40 Z" fill="#161b22"/>
+  <line x1="0" y1="40" x2="1200" y2="40" stroke="#30363d" stroke-width="1"/>
+
+  <!-- Traffic Lights -->
+  <circle cx="24" cy="20" r="6" fill="#ff5f56"/>
+  <circle cx="44" cy="20" r="6" fill="#ffbd2e"/>
+  <circle cx="64" cy="20" r="6" fill="#27c93f"/>
+
+  <!-- Title -->
+  <text x="600" y="25" text-anchor="middle" fill="#8b949e" font-size="12" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">ctxhead demo</text>
+
+  <!-- Terminal Output -->
+  <text xml:space="preserve" style="white-space: pre;" class="line line-cmd l1" x="32" y="72">$ ctxhead init</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-out l2" x="32" y="98">created  .ctxignore</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-out l3" x="32" y="124">created  .ctxhead.json</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-dim l4" x="32" y="150">Next steps:</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-dim l5" x="32" y="176">  1. ctxhead add &lt;path&gt;   choose the files or folders that get headers</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-dim l6" x="32" y="202">  2. ctxhead enable       allow agents to write headers in this repository</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-cmd l7" x="32" y="228">$ ctxhead add src</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-out l8" x="32" y="254">added    src</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-cmd l9" x="32" y="280">$ ctxhead enable</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-out l10" x="32" y="306">ctxhead is now enabled in this repository.</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-cmd l11" x="32" y="332">$ ctxhead write src/greet.ts --description &quot;Builds a greeting string for a given name. Open when changing how users are greeted.&quot;</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-out l12" x="32" y="358">wrote    src/greet.ts</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-cmd l13" x="32" y="384">$ ctxhead check</text>
+  <text xml:space="preserve" style="white-space: pre;" class="line line-ok l14" x="32" y="410">OK: 1 file(s) checked, all headers fresh.</text>
+</svg>

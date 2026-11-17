@@ -9,24 +9,20 @@ schema: spec-driven
 #     Designs and tasks must cover Windows, macOS, and Linux
 #     Write all artifacts in Spanish
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+# Per-artifact rules
+rules:
+  tasks:
+    - "Put a model tag after each task number: `[haiku]` or `[sonnet]`. Example: `- [ ] 1.1 [haiku] Add NOTICE ...`."
+    - "Use `[haiku]` for mechanical, low-judgment work: boilerplate or template text, single-file config or metadata edits, and running commands to check their output."
+    - "Use `[sonnet]` for work that needs reasoning: new logic or tests, multi-file changes, parsers, CI workflows, git history changes, driving external agents, or judging unclear output."
+    - "When unsure, use `[sonnet]`. Split a task that mixes both kinds if the parts can be verified separately."
+    - "Under the `# Tasks` heading, add one line that explains the model tags."
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+# Per-operation guidance
+operations:
+  apply:
+    guidance:
+      - "Dispatch each task to a subagent with the Agent tool, and set `model` to the task's tag (`haiku` or `sonnet`)."
+      - "Give the subagent the task text, the design decisions the task cites, and the task's verify step."
+      - "The main session reviews each subagent result, re-runs the verify step, and only then checks the task off."
+      - "Ask the user before dispatching a task with hard-to-reverse effects, such as a git history rewrite or a push."

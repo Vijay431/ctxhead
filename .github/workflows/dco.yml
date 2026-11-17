@@ -1,0 +1,32 @@
+name: DCO
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check Signed-off-by trailers
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          missing=0
+          while IFS=$'\t' read -r sha signoff; do
+            [ -z "$sha" ] && continue
+            if [ -z "$signoff" ]; then
+              echo "Missing Signed-off-by: $sha"
+              missing=1
+            fi
+          done < <(git log --no-merges --format='%H%x09%(trailers:key=Signed-off-by,valueonly,separator=%x2C)' "$BASE".."$HEAD")
+          if [ "$missing" -ne 0 ]; then
+            echo "Fix: git commit --amend -s (last commit) or git rebase --signoff <base> (range), then force-push."
+            exit 1
+          fi

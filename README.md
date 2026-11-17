@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.svg" alt="ctxhead: headers that let AI agents read 15 lines, not the whole file" width="100%"></p>
+
 # ctxhead
 
 An npm CLI that puts a short frontmatter header at the top of each source file, so AI coding
@@ -20,6 +22,8 @@ ctxhead add src                 # choose what gets headers
 ctxhead enable                  # allow header writes
 ctxhead stale                   # see what needs a header, with a token estimate
 ```
+
+<p align="center"><img src="assets/demo.svg" alt="Terminal demo: ctxhead init, add src, enable, write and check on a sample file" width="800"></p>
 
 Then ask your agent to run the `ctxhead` skill (or the `/ctxhead` command). The agent writes
 each description; the CLI validates and stamps it.
@@ -75,4 +79,6 @@ unmarked file, and edits shared files (`AGENTS.md` and friends) only between
 
 ## License
 
-MIT
+ctxhead is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the full text, and [TRADEMARKS.md](TRADEMARKS.md) for the trademark policy covering the name "ctxhead".
+
+Files that ctxhead generates in your repository belong to you. This includes the frontmatter headers, `.ctxhead.json`, `.ctxignore`, and the installed skill, command, and rules files.
