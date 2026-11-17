@@ -10,7 +10,7 @@ Linear project: https://linear.app/vijay-gangatharan/project/vs-code-ctxhead-bab
 
 ## Status
 
-v1 implemented under openspec/changes/ctxhead-cli-v1 (pending archive). Planning lives in openspec/.
+v1 implemented under openspec/changes/ctxhead-cli-v1 (archived). Planning lives in openspec/.
 
 ## Commands
 
