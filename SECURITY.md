@@ -13,7 +13,7 @@ Only the latest 0.x release of `ctxhead` receives security fixes.
 
 Please report security vulnerabilities privately through GitHub Security Advisories:
 
-https://github.com/Vijay431/vscode-ctxhead/security/advisories/new
+https://github.com/Vijay431/ctxhead/security/advisories/new
 
 Do not open a public issue, pull request, or discussion for a security problem. Public reports can expose users before a fix is available.
 

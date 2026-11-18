@@ -43,5 +43,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `<!-- ctxhead:start -->` and `<!-- ctxhead:end -->` markers.
 - Apache License, Version 2.0, with `NOTICE` and trademark policy for the "ctxhead" name.
 
-[Unreleased]: https://github.com/Vijay431/vscode-ctxhead/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/Vijay431/vscode-ctxhead/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Vijay431/ctxhead/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Vijay431/ctxhead/releases/tag/v0.1.0

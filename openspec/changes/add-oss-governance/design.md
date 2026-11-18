@@ -88,7 +88,7 @@ private. `CONTRIBUTING.md` explains them in one line. They are already outside `
 tarball excludes them.
 
 ### D8. Package metadata
-`repository: {type: git, url: git+https://github.com/Vijay431/vscode-ctxhead.git}`, plus
+`repository: {type: git, url: git+https://github.com/Vijay431/ctxhead.git}`, plus
 `homepage` (README anchor) and `bugs` (issues URL) on the same repo. `author` is
 `Vijay Gangatharan <vijaygangatharan.official@gmail.com>`, the public project email. `keywords`: ai, agents, claude, codex, gemini, context, cli,
 frontmatter. `files` gains `NOTICE`.

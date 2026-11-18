@@ -16,11 +16,11 @@
   "author": "Vijay Gangatharan <vijaygangatharan.official@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Vijay431/vscode-ctxhead.git"
+    "url": "git+https://github.com/Vijay431/ctxhead.git"
   },
-  "homepage": "https://github.com/Vijay431/vscode-ctxhead#readme",
+  "homepage": "https://github.com/Vijay431/ctxhead#readme",
   "bugs": {
-    "url": "https://github.com/Vijay431/vscode-ctxhead/issues"
+    "url": "https://github.com/Vijay431/ctxhead/issues"
   },
   "type": "module",
   "bin": {

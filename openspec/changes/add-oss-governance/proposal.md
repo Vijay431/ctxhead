@@ -62,5 +62,6 @@ None. CLI behavior does not change.
   signed off (design Risks, task 4.4), so `main` is DCO-clean from the start. The rewrite runs
   last, after any `enforce-header-hooks` commits, while `origin` still has no branches.
 - Contributors must sign off every commit. The DCO check runs on PR commits.
-- Out of scope: renaming the GitHub repo or the Linear project, registering the trademark, and
-  publishing to npm.
+- Repository name: the GitHub repository is `Vijay431/ctxhead`, not `vscode-ctxhead`, because
+  ctxhead is not a VS Code extension. All repository URLs and the `origin` remote use that name.
+- Out of scope: renaming the Linear project, registering the trademark, and publishing to npm.
