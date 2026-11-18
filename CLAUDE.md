@@ -6,7 +6,7 @@ Open-source npm CLI (`ctxhead`) that adds a frontmatter header summary to each s
 
 ## Source of truth
 
-Linear project: https://linear.app/vijay-gangatharan/project/vs-code-ctxhead-bab97998c8e6
+Linear project: https://linear.app/vijay-gangatharan/project/ctxhead-bab97998c8e6
 
 ## Status
 
