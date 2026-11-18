@@ -45,6 +45,7 @@ const cases: [string, string, GuardEvent, object][] = [
     'read',
     { targets: [{ path: `${P}/a.ts`, endLine: 1 }] },
   ],
+  ['antigravity', 'antigravity-subagent-read.json', 'read', { targets: [{ path: `${P}/c.ts` }] }],
   ['antigravity', 'antigravity-shell.json', 'read', { targets: [], shellCommand: 'cat b.ts' }],
   ['antigravity', 'antigravity-finish.json', 'finish', { targets: [] }],
 ];

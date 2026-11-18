@@ -65,7 +65,12 @@ describe('hook config helpers', () => {
     expect(out.hooks.Stop).toEqual([
       { type: 'command', command: 'ctxhead guard --agent antigravity --event finish' },
     ]);
-    expect(out.hooks.PreToolUse[0].matcher).toBe('*');
+    expect(out.hooks.PreToolUse.map((g: { matcher: string }) => g.matcher)).toEqual([
+      'read_file',
+      'view_file',
+      'run_command',
+    ]);
+    expect(upsertHooks(JSON.stringify(out), antiSpec)).toBe(`${JSON.stringify(out, null, 2)}\n`);
     expect(removeHooks(JSON.stringify(out))).toBeNull();
   });
 

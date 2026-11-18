@@ -10,7 +10,7 @@ Captured 2026-11-17 with a tiny hook script in a throwaway repo. Claude Code 2.1
 - `claude-subagent-read.json`: PreToolUse fired from a subagent. It has the same `session_id` as the parent plus `agent_id` and `agent_type`.
 - `antigravity-read.json`, `antigravity-shell.json`, `antigravity-finish.json` (Stop)
 
-Antigravity has no subagent fixture because task 1.1 does not require one.
+- `antigravity-subagent-read.json`: PreToolUse fired from a subagent's `read_file` (the parent spawned it with `invoke_subagent`). The subagent has its own `conversationId` (the parent's id differs), an empty `lastUserInput`, and no parent-link field. The parent's id only shows up as `Recipient` in the subagent's `send_message` call. Scrubbed ids are all zeros, so the two ids look equal here.
 
 ## Doc-derived (not captured)
 

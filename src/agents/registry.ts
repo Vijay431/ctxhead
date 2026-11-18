@@ -28,7 +28,8 @@ export interface HookTargets {
   path: string;
   /** 'nested': every event holds matcher groups. 'flat-finish': the finish event holds handlers directly. */
   format: 'nested' | 'flat-finish';
-  read: { event: string; matcher: string };
+  /** One matcher group per entry; a list keeps exact tool names where regex support is unverified. */
+  read: { event: string; matcher: string | string[] };
   finish: { event: string };
 }
 
@@ -152,7 +153,7 @@ export const AGENTS: Agent[] = [
       hooks: {
         path: '.agents/hooks.json',
         format: 'flat-finish',
-        read: { event: 'PreToolUse', matcher: '*' },
+        read: { event: 'PreToolUse', matcher: ['read_file', 'view_file', 'run_command'] },
         finish: { event: 'Stop' },
       },
     },
@@ -164,7 +165,7 @@ export const AGENTS: Agent[] = [
       hooks: {
         path: '.gemini/config/hooks.json',
         format: 'flat-finish',
-        read: { event: 'PreToolUse', matcher: '*' },
+        read: { event: 'PreToolUse', matcher: ['read_file', 'view_file', 'run_command'] },
         finish: { event: 'Stop' },
       },
     },

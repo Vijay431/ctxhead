@@ -10,7 +10,7 @@ export class HookConfigError extends Error {
 
 export interface HookSpec {
   format: 'nested' | 'flat-finish';
-  read: { event: string; matcher: string; command: string };
+  read: { event: string; matcher: string | string[]; command: string };
   finish: { event: string; command: string };
 }
 
@@ -96,10 +96,10 @@ export function upsertHooks(text: string | null, spec: HookSpec): string {
   const hooks = isObject(root.hooks) ? root.hooks : {};
   root.hooks = hooks;
   const handler = (command: string) => ({ type: 'command', command });
-  append(hooks, spec.read.event, {
-    matcher: spec.read.matcher,
-    hooks: [handler(spec.read.command)],
-  });
+  const matchers = Array.isArray(spec.read.matcher) ? spec.read.matcher : [spec.read.matcher];
+  for (const matcher of matchers) {
+    append(hooks, spec.read.event, { matcher, hooks: [handler(spec.read.command)] });
+  }
   append(
     hooks,
     spec.finish.event,
