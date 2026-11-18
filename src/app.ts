@@ -1,3 +1,4 @@
+import { guard } from './commands/guard.js';
 import { init } from './commands/init.js';
 import { install, uninstall, update } from './commands/install.js';
 import { add, remove } from './commands/paths.js';
@@ -23,6 +24,7 @@ const COMMANDS: Record<string, Command> = {
   stale,
   write,
   check,
+  guard,
 };
 
 export const HELP = `ctxhead - short file headers so AI agents read ~15 lines instead of whole files
@@ -30,7 +32,8 @@ export const HELP = `ctxhead - short file headers so AI agents read ~15 lines in
 Usage: ctxhead <command> [options]
 
 Agent setup (exactly one of --global or --project):
-  install --global|--project [--tools claude,codex,gemini,antigravity]
+  install --global|--project [--tools claude,codex,gemini,antigravity] [--no-enforce]
+                             --no-enforce skips the guard hooks
   update --global|--project  regenerate installed files
   uninstall --global|--project  remove ctxhead-owned files and blocks
 
@@ -46,6 +49,9 @@ Used by agent skills:
   write <file> [--name <n>] --description <text>
                              validate and stamp a header
   check                      read-only gate for CI (exit 1 on problems)
+
+Used by agent hooks:
+  guard --agent <id> --event read|finish   agent hook (reads JSON on stdin)
 
 Options:
   -h, --help                 show this help

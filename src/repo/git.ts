@@ -66,3 +66,20 @@ export async function candidateFiles(root: string): Promise<string[]> {
   const result = await git(root, ['ls-files', '--cached', '--others', '--exclude-standard', '-z']);
   return [...new Set(splitNul(result.stdout))];
 }
+
+/**
+ * Repo-relative paths that are modified, staged, or untracked (not ignored), from
+ * `git status --porcelain -z`. Rename and copy entries carry an extra source path; the new path is kept.
+ */
+export async function statusPaths(root: string): Promise<string[]> {
+  const result = await git(root, ['status', '--porcelain', '-z', '--untracked-files=all']);
+  const entries = splitNul(result.stdout);
+  const paths: string[] = [];
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i] as string;
+    const xy = entry.slice(0, 2);
+    paths.push(entry.slice(3));
+    if (/[RC]/.test(xy)) i++;
+  }
+  return [...new Set(paths)];
+}

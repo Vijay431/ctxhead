@@ -32,6 +32,8 @@ whether to open the body. The CLI validates and stamps headers; you write the de
    If the exit code is 2, fix the input using the printed \`rule <id>:\` lines and retry.
 4. Run \`ctxhead stale\` again until no files are listed.
 
+Running \`ctxhead stale\` (step 1) is what lets you read the listed files during a refresh.
+
 ## Header format
 
 \`\`\`
@@ -68,6 +70,14 @@ Some source files start with a ctxhead header: a comment block between two \`---
 
 - Before opening a file, read its first lines up to the closing \`---\` of the header.
 - Open the rest of the file only when the description's "when" clause matches your task.
+- When ctxhead hooks are installed, the first read of a headed file's body in a session is
+  denied. The deny reason shows the file's header. Decide from the header. Re-issue the same
+  read only if the header does not settle the question.
+- If a read stops with \`STOP: do not continue this task.\`, stop the task. Report the listed
+  files to the user. Wait for them to refresh the headers and tell you to resume. Do not work
+  around it.
+- If a fresh header's description is wrong for its file, stop the task. Name the file to the
+  user and ask them to refresh its header. Wait for them to tell you to resume.
 - After you change a file that has a header, or when \`ctxhead stale\` lists files, follow the
   ctxhead skill to refresh the headers. Never edit the \`ctxhead:\` hash line by hand.`;
 

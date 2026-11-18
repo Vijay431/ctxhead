@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `ctxhead guard --agent <id> --event <read|finish>`, an agent hook that enforces the header rules
+  for Claude Code, Codex, Gemini CLI, and Antigravity. It has a read-first gate, a stale halt with
+  a refresh window opened by `ctxhead stale`, a best-effort shell gate, and a finish gate that
+  also covers uncommitted edits from before the session. It fails open.
+- `ctxhead install` writes the guard hooks into each agent's hook config by default. The hook
+  config paths are listed in the README install table.
+- `--no-enforce` on `ctxhead install` skips the hooks. `ctxhead update` regenerates them, and
+  `ctxhead uninstall` removes only ctxhead's own hook entries.
+- Per-session guard state under `$XDG_STATE_HOME/ctxhead`, never in the repository.
+
+### Upgrading from 0.1.0
+
+- `ctxhead update` does not add hooks to a 0.1.0 install. Run `ctxhead install` again with the
+  same `--global` or `--project` and `--tools` flags to add them.
+- `ctxhead` must be on `PATH` for the hooks to run. Codex project hooks must be trusted with
+  `/hooks` before they run.
+
 ## [0.1.0] - 2026-11-17
 
 ### Added

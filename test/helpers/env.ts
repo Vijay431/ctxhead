@@ -10,6 +10,8 @@ export interface TestEnv {
   repo: string;
   /** Temporary HOME. */
   home: string;
+  /** Temporary guard state directory. */
+  stateBase: string;
   /** Runs the CLI in-process from `cwd` (default: repo root). */
   cli(args: string[], options?: CliOptions): Promise<CliResult>;
   write(path: string, content: string): void;
@@ -20,6 +22,8 @@ export interface CliOptions {
   interactive?: boolean;
   /** Ids the injected picker returns; receives the preselected ids through `picked.preselected`. */
   pick?: string[];
+  /** Text the injected stdin yields (default empty). */
+  stdin?: string;
 }
 
 export interface CliResult {
@@ -50,6 +54,7 @@ export function gitCommitAll(dir: string, message = 'commit'): string {
 export function createEnv(): TestEnv {
   const repo = tempDir('ctxhead-repo-');
   const home = tempDir('ctxhead-home-');
+  const stateBase = tempDir('ctxhead-state-');
   gitInit(repo);
 
   const write = (path: string, content: string) => {
@@ -61,6 +66,7 @@ export function createEnv(): TestEnv {
   return {
     repo,
     home,
+    stateBase,
     write,
     async cli(args, options = {}) {
       let out = '';
@@ -70,6 +76,8 @@ export function createEnv(): TestEnv {
         cwd: options.cwd ?? repo,
         home,
         interactive: options.interactive ?? false,
+        stateBase,
+        readStdin: async () => options.stdin ?? '',
         out: (text) => {
           out += text;
         },

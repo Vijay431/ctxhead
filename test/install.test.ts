@@ -1,9 +1,9 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { hasBlock, removeBlock, upsertBlock } from '../src/agents/blocks.js';
-import { CLAUDE_COMMAND, COMMAND_BODY, SKILL } from '../src/templates/index.js';
-import { createEnv } from './helpers/env.js';
+import { CLAUDE_COMMAND, COMMAND_BODY, RULES_BODY, SKILL } from '../src/templates/index.js';
+import { createEnv, tempDir } from './helpers/env.js';
 
 const read = (dir: string, p: string) => readFileSync(join(dir, p), 'utf8');
 
@@ -22,6 +22,17 @@ describe('templates', () => {
     expect(CLAUDE_COMMAND).toContain(COMMAND_BODY);
     expect(COMMAND_BODY).toMatch(/ctxhead skill/);
     expect(CLAUDE_COMMAND).not.toContain('ctxhead write');
+  });
+  it('rules say to stop and ask the user to refresh a header with a wrong description', () => {
+    expect(RULES_BODY).toMatch(/description.*wrong/is);
+    expect(RULES_BODY).toMatch(/stop/i);
+    expect(RULES_BODY).toMatch(/resum/i);
+  });
+  it('rules describe the STOP: halt', () => {
+    expect(RULES_BODY).toContain('STOP: do not continue this task.');
+  });
+  it('skill notes that ctxhead stale lets the agent read listed files during a refresh', () => {
+    expect(SKILL).toMatch(/ctxhead stale.*read the listed files/is);
   });
 });
 
@@ -94,7 +105,7 @@ describe('install', () => {
     await env2.cli(['install', '--project', '--tools', 'codex']);
     expect(existsSync(join(env2.repo, '.agents/skills/ctxhead/SKILL.md'))).toBe(true);
     expect(existsSync(join(env2.repo, '.agents/workflows'))).toBe(false);
-    expect(existsSync(join(env2.repo, '.codex'))).toBe(false);
+    expect(existsSync(join(env2.repo, '.codex/hooks.json'))).toBe(true);
   });
   it('preselects detected agents in the picker; bare .agents does not detect antigravity', async () => {
     const env = createEnv();
@@ -182,5 +193,123 @@ describe('update and uninstall', () => {
     expect(r.code).toBe(0);
     expect(readFileSync(skill, 'utf8')).toBe(SKILL);
     expect(existsSync(join(env.home, '.gemini'))).toBe(false);
+  });
+});
+
+describe('enforcement hooks', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+  const json = (dir: string, p: string) => JSON.parse(read(dir, p));
+  const owned = (text: string) => text.match(/ctxhead guard/g)?.length ?? 0;
+
+  it('default install adds read and finish hooks and lists the file', async () => {
+    const env = createEnv();
+    const r = await env.cli(['install', '--project', '--tools', 'claude']);
+    expect(r.code).toBe(0);
+    const hooks = json(env.repo, '.claude/settings.json').hooks;
+    expect(hooks.PreToolUse[0].matcher).toBe('Read|Bash');
+    expect(hooks.PreToolUse[0].hooks[0].command).toContain('ctxhead guard --agent claude');
+    expect(hooks.Stop[0].hooks[0].command).toContain('--event finish');
+    expect(r.out).toContain('.claude/settings.json');
+  });
+  it('--no-enforce creates no hook config', async () => {
+    const env = createEnv();
+    const r = await env.cli(['install', '--project', '--tools', 'claude,codex', '--no-enforce']);
+    expect(r.code).toBe(0);
+    expect(existsSync(join(env.repo, '.claude/settings.json'))).toBe(false);
+    expect(existsSync(join(env.repo, '.codex'))).toBe(false);
+    expect(r.out).not.toContain('settings.json');
+    expect(r.out).not.toContain('/hooks');
+  });
+  it('keeps user hooks and keys, adds ours once, and re-runs unchanged', async () => {
+    const env = createEnv();
+    const user = { type: 'command', command: 'echo mine' };
+    env.write(
+      '.claude/settings.json',
+      JSON.stringify({
+        permissions: { allow: ['Bash(ls)'] },
+        hooks: { PreToolUse: [{ matcher: 'Edit', hooks: [user] }] },
+      }),
+    );
+    await env.cli(['install', '--project', '--tools', 'claude']);
+    const first = read(env.repo, '.claude/settings.json');
+    const cfg = JSON.parse(first);
+    expect(cfg.permissions).toEqual({ allow: ['Bash(ls)'] });
+    expect(cfg.hooks.PreToolUse[0]).toEqual({ matcher: 'Edit', hooks: [user] });
+    expect(owned(first)).toBe(2);
+    const r = await env.cli(['install', '--project', '--tools', 'claude']);
+    expect(read(env.repo, '.claude/settings.json')).toBe(first);
+    expect(r.out).toMatch(/unchanged\s+\.claude\/settings\.json/);
+  });
+  it('invalid hook JSON fails, names the file, and writes nothing', async () => {
+    const env = createEnv();
+    env.write('.gemini/settings.json', '{ not json');
+    const r = await env.cli(['install', '--project', '--tools', 'gemini']);
+    expect(r.code).not.toBe(0);
+    expect(r.err).toContain('.gemini/settings.json');
+    expect(read(env.repo, '.gemini/settings.json')).toBe('{ not json');
+    expect(existsSync(join(env.repo, '.gemini/skills'))).toBe(false);
+    expect(existsSync(join(env.repo, '.gemini/commands'))).toBe(false);
+    expect(existsSync(join(env.repo, 'AGENTS.md'))).toBe(false);
+    expect(existsSync(join(env.repo, 'GEMINI.md'))).toBe(false);
+  });
+  it('uninstall keeps user hooks', async () => {
+    const env = createEnv();
+    const user = { type: 'command', command: 'echo mine' };
+    env.write(
+      '.claude/settings.json',
+      JSON.stringify({ hooks: { PreToolUse: [{ matcher: 'Edit', hooks: [user] }] } }),
+    );
+    await env.cli(['install', '--project', '--tools', 'claude']);
+    const r = await env.cli(['uninstall', '--project']);
+    expect(r.code).toBe(0);
+    expect(json(env.repo, '.claude/settings.json')).toEqual({
+      hooks: { PreToolUse: [{ matcher: 'Edit', hooks: [user] }] },
+    });
+    expect(r.out).toMatch(/removed\s+\.claude\/settings\.json/);
+  });
+  it('uninstall deletes a hook file holding only ctxhead hooks', async () => {
+    const env = createEnv();
+    await env.cli(['install', '--project', '--tools', 'antigravity']);
+    expect(existsSync(join(env.repo, '.agents/hooks.json'))).toBe(true);
+    await env.cli(['uninstall', '--project']);
+    expect(existsSync(join(env.repo, '.agents/hooks.json'))).toBe(false);
+  });
+  it('tells the user to trust Codex project hooks with /hooks', async () => {
+    const env = createEnv();
+    const r = await env.cli(['install', '--project', '--tools', 'codex']);
+    expect(r.out).toContain('/hooks');
+    expect(existsSync(join(env.repo, '.codex/hooks.json'))).toBe(true);
+  });
+  it('warns when ctxhead is not on PATH and stays quiet when it is', async () => {
+    const env = createEnv();
+    const env2 = createEnv();
+    const empty = tempDir('ctxhead-path-');
+    vi.stubEnv('PATH', empty);
+    const missing = await env.cli(['install', '--global', '--tools', 'claude']);
+    expect(missing.code).toBe(0);
+    expect(missing.err).toContain('npm i -g ctxhead');
+
+    const bin = tempDir('ctxhead-bin-');
+    const exe = join(bin, process.platform === 'win32' ? 'ctxhead.cmd' : 'ctxhead');
+    writeFileSync(exe, '#!/bin/sh\n');
+    chmodSync(exe, 0o755);
+    vi.stubEnv('PATH', bin);
+    const found = await env2.cli(['install', '--global', '--tools', 'claude']);
+    expect(found.code).toBe(0);
+    expect(found.err).not.toContain('PATH');
+  });
+  it('update regenerates a hand-edited owned hook entry', async () => {
+    const env = createEnv();
+    await env.cli(['install', '--project', '--tools', 'claude']);
+    const good = read(env.repo, '.claude/settings.json');
+    const cfg = JSON.parse(good);
+    cfg.hooks.Stop[0].hooks[0].command = 'ctxhead guard --agent claude --event wrong';
+    writeFileSync(join(env.repo, '.claude/settings.json'), JSON.stringify(cfg));
+    const r = await env.cli(['update', '--project']);
+    expect(r.code).toBe(0);
+    expect(read(env.repo, '.claude/settings.json')).toBe(good);
+    expect(r.out).toMatch(/updated\s+\.claude\/settings\.json/);
   });
 });

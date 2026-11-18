@@ -1,0 +1,10 @@
+{
+  "session_id": "00000000-0000-0000-0000-000000000000",
+  "transcript_path": "/home/user/.gemini/tmp/x/chats/session-00000000-0000-0000-0000-000000000000.json",
+  "cwd": "/home/user/project",
+  "timestamp": "2026-01-01T00:00:00.000Z",
+  "hook_event_name": "AfterAgent",
+  "prompt": "Read a.ts and b.ts",
+  "prompt_response": "Done.",
+  "stop_hook_active": false
+}

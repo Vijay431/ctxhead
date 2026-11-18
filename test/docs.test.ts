@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { AGENTS } from '../src/agents/registry.js';
 import { createEnv } from './helpers/env.js';
 
 const BODIES: Record<string, { ext: string; body: string }> = {
@@ -24,5 +25,14 @@ describe('docs/header-format.md', () => {
     const result = await env.cli(['check']);
     expect(result.out).toContain(`OK: ${examples.length} file(s)`);
     expect(result.code).toBe(0);
+  });
+});
+
+describe('README.md', () => {
+  it('names every hook config path in the agent registry', () => {
+    const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
+    const paths = AGENTS.flatMap((agent) => [agent.project.hooks?.path, agent.global.hooks?.path]);
+    const missing = paths.filter((path) => path && !readme.includes(path));
+    expect(missing).toEqual([]);
   });
 });

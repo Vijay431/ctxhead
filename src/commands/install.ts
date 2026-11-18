@@ -1,15 +1,19 @@
 import {
+  accessSync,
+  constants,
   existsSync,
   mkdirSync,
   readdirSync,
   readFileSync,
   rmdirSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { delimiter, dirname, join } from 'node:path';
 import { parseArgs } from 'node:util';
 import { hasBlock, removeBlock, upsertBlock } from '../agents/blocks.js';
+import { HookConfigError, hasOwnedHooks, removeHooks, upsertHooks } from '../agents/hooks.js';
 import {
   AGENT_IDS,
   AGENTS,
@@ -37,12 +41,17 @@ function parseScope(args: string[]) {
       global: { type: 'boolean' },
       project: { type: 'boolean' },
       tools: { type: 'string' },
+      'no-enforce': { type: 'boolean' },
     },
   });
   if (Boolean(values.global) === Boolean(values.project)) {
     throw new CliError('Exactly one of --global or --project is required.');
   }
-  return { scope: (values.global ? 'global' : 'project') as Scope, tools: values.tools };
+  return {
+    scope: (values.global ? 'global' : 'project') as Scope,
+    tools: values.tools,
+    enforce: !values['no-enforce'],
+  };
 }
 
 async function resolveBase(scope: Scope, io: Io): Promise<Base> {
@@ -77,7 +86,7 @@ function userImportsAgents(text: string | null): boolean {
 }
 
 export async function install(args: string[], io: Io): Promise<void> {
-  const { scope, tools } = parseScope(args);
+  const { scope, tools, enforce } = parseScope(args);
 
   let agents: Agent[];
   if (tools !== undefined) {
@@ -116,7 +125,7 @@ export async function install(args: string[], io: Io): Promise<void> {
     if (agents.length === 0) throw new CliError('No agents selected; nothing installed.');
   }
 
-  const artifacts = artifactsForAll(agents, scope);
+  const artifacts = artifactsForAll(agents, scope, { enforce });
   const conflicts = artifacts
     .filter(
       (a) => a.kind === 'file' && read(base, a.path) !== null && !ownsFile(read(base, a.path)),
@@ -128,18 +137,80 @@ export async function install(args: string[], io: Io): Promise<void> {
     );
   }
 
+  const invalid: string[] = [];
+  for (const a of artifacts) {
+    if (a.kind !== 'hooks') continue;
+    try {
+      nextHooks(base, a);
+    } catch (error) {
+      if (!(error instanceof HookConfigError)) throw error;
+      invalid.push(`${display(base, a.path)}: ${error.message}`);
+    }
+  }
+  if (invalid.length > 0) {
+    throw new CliError(
+      `Cannot edit hook config; fix or remove it, then re-run (nothing was written):\n  ${invalid.join('\n  ')}`,
+    );
+  }
+
   const results: [Action, string][] = [];
+  const hookResults: [Action, Artifact][] = [];
   for (const artifact of artifacts) {
     if (artifact.shim && userImportsAgents(read(base, artifact.path))) continue;
-    results.push(applyArtifact(base, artifact));
+    const result = applyArtifact(base, artifact);
+    results.push(result);
+    if (artifact.kind === 'hooks') hookResults.push([result[0], artifact]);
   }
   report(io, base, results);
+  hookNotices(io, scope, hookResults);
+}
+
+function hookNotices(io: Io, scope: Scope, written: [Action, Artifact][]): void {
+  if (written.length === 0) return;
+  if (!onPath('ctxhead')) {
+    io.err(
+      'warning: ctxhead was not found on PATH. The installed hooks call `ctxhead` by name, so install it globally (npm i -g ctxhead).\n',
+    );
+  }
+  const codex = written.some(([action, a]) => a.agent === 'codex' && action !== 'unchanged');
+  if (codex && scope === 'project') {
+    io.out('Codex: review and trust the new hooks with /hooks in Codex.\n');
+  }
+}
+
+/** True when an executable named `name` is in a PATH directory. */
+function onPath(name: string): boolean {
+  const names = process.platform === 'win32' ? [name, `${name}.cmd`, `${name}.exe`] : [name];
+  for (const dir of (process.env.PATH ?? '').split(delimiter)) {
+    if (!dir) continue;
+    for (const n of names) {
+      try {
+        const full = join(dir, n);
+        if (!statSync(full).isFile()) continue;
+        accessSync(full, constants.X_OK);
+        return true;
+      } catch {
+        // not here
+      }
+    }
+  }
+  return false;
+}
+
+/** The hook config text install would write; throws HookConfigError on unusable JSON. */
+function nextHooks(base: Base, artifact: Artifact): string {
+  if (!artifact.hooks) throw new Error('hooks artifact without spec');
+  return upsertHooks(read(base, artifact.path), artifact.hooks);
 }
 
 function applyArtifact(base: Base, artifact: Artifact): [Action, string] {
   const existing = read(base, artifact.path);
   const next =
-    artifact.kind === 'file' ? artifact.content : upsertBlock(existing ?? '', artifact.content);
+    artifact.kind === 'file'
+      ? artifact.content
+      : artifact.kind === 'hooks'
+        ? nextHooks(base, artifact)
+        : upsertBlock(existing ?? '', artifact.content);
   if (existing === next) return ['unchanged', artifact.path];
   save(base, artifact.path, next);
   return [existing === null ? 'created' : 'updated', artifact.path];
@@ -157,7 +228,11 @@ export async function update(args: string[], io: Io): Promise<void> {
   for (const artifact of allArtifacts(scope)) {
     const existing = read(base, artifact.path);
     const owned =
-      artifact.kind === 'file' ? ownsFile(existing) : existing !== null && hasBlock(existing);
+      artifact.kind === 'file'
+        ? ownsFile(existing)
+        : artifact.kind === 'hooks'
+          ? existing !== null && hasOwnedHooks(existing)
+          : existing !== null && hasBlock(existing);
     if (owned) results.push(applyArtifact(base, artifact));
   }
   report(io, base, results);
@@ -179,6 +254,12 @@ export async function uninstall(args: string[], io: Io): Promise<void> {
       if (!ownsFile(existing)) continue;
       rmSync(join(base.dir, artifact.path));
       if (artifact.path.endsWith('/SKILL.md')) pruneEmptyParent(base, artifact.path);
+      results.push(['removed', artifact.path]);
+    } else if (artifact.kind === 'hooks') {
+      if (!hasOwnedHooks(existing)) continue;
+      const next = removeHooks(existing);
+      if (next === null) rmSync(join(base.dir, artifact.path));
+      else save(base, artifact.path, next);
       results.push(['removed', artifact.path]);
     } else if (hasBlock(existing)) {
       const next = removeBlock(existing);

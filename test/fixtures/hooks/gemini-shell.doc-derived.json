@@ -1,0 +1,12 @@
+{
+  "session_id": "00000000-0000-0000-0000-000000000000",
+  "transcript_path": "/home/user/.gemini/tmp/x/chats/session-00000000-0000-0000-0000-000000000000.json",
+  "cwd": "/home/user/project",
+  "timestamp": "2026-01-01T00:00:00.000Z",
+  "hook_event_name": "BeforeTool",
+  "tool_name": "run_shell_command",
+  "tool_input": {
+    "command": "cat b.ts",
+    "description": "Print b.ts"
+  }
+}

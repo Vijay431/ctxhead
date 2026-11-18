@@ -1,0 +1,18 @@
+{
+  "session_id": "00000000-0000-0000-0000-000000000000",
+  "transcript_path": "/home/user/.claude/projects/x/00000000-0000-0000-0000-000000000000.jsonl",
+  "cwd": "/home/user/project",
+  "prompt_id": "00000000-0000-0000-0000-000000000000",
+  "permission_mode": "auto",
+  "agent_id": "a00000000000000000",
+  "agent_type": "general-purpose",
+  "effort": {
+    "level": "medium"
+  },
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Read",
+  "tool_input": {
+    "file_path": "/home/user/project/c.ts"
+  },
+  "tool_use_id": "toolu_01XJTjiyBUvbvnpbZ3rw92xt"
+}
